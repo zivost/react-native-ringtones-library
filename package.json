@@ -1,0 +1,21 @@
+{
+  "name": "react-native-ringtones-library",
+  "author": "Vishal Rawat<vishal@zivost.com>",
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "React Native Ringtone Manager",
+  "keywords": [
+    "react-native"
+  ],
+  "license": "",
+  "main": "index.js",
+  
+  "peerDependencies": {
+    "react-native": "^0.41.2",
+    "react-native-windows": "0.41.0-rc.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.1.0"
+}
