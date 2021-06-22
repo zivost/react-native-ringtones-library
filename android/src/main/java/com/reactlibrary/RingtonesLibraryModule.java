@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.database.DatabaseUtils;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -65,6 +66,11 @@ class RingtoneUtils {
 
     public static boolean setRingtone(@NonNull Context context, @NonNull Uri ringtoneUri, int type) {
         Log.v(LOG_TAG, "Setting Ringtone to: " + ringtoneUri);
+        if(ringtoneUri == null){
+            Log.v(LOG_TAG, "Error setting ringtone");
+            Toast.makeText(context, "Unable to set Ringtone", Toast.LENGTH_SHORT).show();
+            return true;
+        }
 
         if (!hasMarshmallow()) {
             Log.v(LOG_TAG, "On a Lollipop or below device, so go ahead and change device ringtone");
@@ -329,7 +335,7 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @ReactMethod
-    public void createRingtone(final ReadableMap settings, Context context) {
+    public void createRingtone(final ReadableMap settings) {
        final String uriStr = settings.getString(SettingsKeys.URI);
        final File ringtone = new File(uriStr);
        final ContentValues values = new ContentValues();
@@ -344,41 +350,27 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
        values.put(MediaStore.Audio.Media.IS_ALARM, false);
        values.put(MediaStore.Audio.Media.IS_MUSIC, false);
        if (ringtone.exists() && getCurrentActivity() != null) {
-//            Uri uri = MediaStore.Audio.Media.getContentUriForPath(ringtone.getAbsolutePath());
-//            Uri newUri = getCurrentActivity().getContentResolver().insert(uri, values);
-
-        //    final Uri uri = MediaStore.Audio.Media.getContentUriForPath(ringtone.getAbsolutePath());
-        //    final Uri newUri = contentResolver.insert(uri, values);
-//           RingtoneManager.setActualDefaultRingtoneUri(
-//                   getCurrentActivity(),
-//                   RingtoneManager.TYPE_RINGTONE,
-//                   newUri
-//           );
-
-
            Uri uri = MediaStore.Audio.Media.getContentUriForPath(ringtone.getAbsolutePath());
-           getCurrentActivity().getContentResolver().delete(uri, MediaStore.MediaColumns.DATA+ "=\"" + ringtone.getAbsolutePath() + "\"", null);
-           Uri newUri = getCurrentActivity().getContentResolver().insert(uri, values);
-
-
-
-//           Log.d("RN-Native",String.valueOf(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI));
-           final ContentResolver contentResolver = getCurrentActivity().getContentResolver();
-//           Uri newUri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
-           Log.e("RN-Native", "newUri post - " + String.valueOf(newUri)+" - "+String.valueOf(newUri));
-           try (OutputStream os = contentResolver.openOutputStream(newUri)) {
-               //copy your file from asset into os here
-                Log.v("RN-Native", "ok");
-           } catch(Exception e) {
-                Log.e("RN-Native", String.valueOf(e)+" - "+String.valueOf(newUri));
+           Cursor cursor = getCurrentActivity().getContentResolver().query(uri, null, MediaStore.MediaColumns.DATA + "=?", new String[]{ringtone.getAbsolutePath()}, null);
+           if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+               String id = cursor.getString(cursor.getColumnIndex("_id"));
+               getCurrentActivity().getContentResolver().update(uri, values, MediaStore.MediaColumns.DATA + "=?", new String[]{ringtone.getAbsolutePath()});
+               try {
+                   Uri finalURI = ContentUris.withAppendedId(uri, Long.valueOf(id));
+                   RingtoneUtils.setRingtone(getCurrentActivity(), finalURI, RingtoneManager.TYPE_RINGTONE);
+               }catch (Exception t) {
+                   Log.e("SPNativeError","Set ringtone err - " + t.getMessage());
+                   Toast.makeText(getCurrentActivity(), "Unable to set Ringtone", Toast.LENGTH_SHORT).show();
+               }finally {
+                   if(cursor != null) {
+                       cursor.close();
+                   }
+               }
+           }else{
+               Log.e("SPNativeError","Cursor error");
            }
-
-           RingtoneUtils.setRingtone(getCurrentActivity(), newUri, RingtoneManager.TYPE_RINGTONE);
-//           Context context = getApplicationContext();
-           Toast.makeText(context, "Ringtone set successfully", Toast.LENGTH_LONG).show();
-
        }else{
-           Log.d("RN-Native","else -- else");
+           Log.e("SPNativeError","Ringtone or Context Missing");
        }
     }
 
