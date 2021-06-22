@@ -76,9 +76,9 @@ class RingtoneUtils {
         } else if(type == RingtoneManager.TYPE_NOTIFICATION) {
             message = "Notification tone Set Successfully";
         }
-        Log.d("Rn-Native", String.valueOf(RingtoneManager.getActualDefaultRingtoneUri(context, type)));
-        Log.d("Rn-Native", String.valueOf(ringtoneUri));
-        Log.d("Rn-Native", String.valueOf(type));
+        Log.d(LOG_TAG, String.valueOf(RingtoneManager.getActualDefaultRingtoneUri(context, type)));
+        Log.d(LOG_TAG, String.valueOf(ringtoneUri));
+        Log.d(LOG_TAG, String.valueOf(type));
         if ((RingtoneManager.getActualDefaultRingtoneUri(context, type)).equals(ringtoneUri)) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } else {
@@ -111,6 +111,7 @@ class RingtoneUtils {
 
 public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
 
+    private static final String LOG_TAG = "RingtoneUtils";
     private final ReactApplicationContext reactContext;
     private static final String TYPE_ALARM_KEY = "TYPE_ALARM";
     private static final String TYPE_ALL_KEY = "TYPE_ALL";
@@ -139,13 +140,13 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getRingtones(final Callback successCallback) {
-        Log.d("RN-Native","getRingtones");
+        Log.d(LOG_TAG,"getRingtones");
         getRingsByType(RingtoneManager.TYPE_ALL, successCallback);
     }
 
     @ReactMethod
     public void getRingsByType(final int ringtoneType, final Callback successCallback) {
-        Log.d("RN-Native","getRingsByType - 2");
+        Log.d(LOG_TAG,"getRingsByType");
         final RingtoneManager manager = new RingtoneManager(this.reactContext);
         manager.setType(ringtoneType);
         final Cursor cursor = manager.getCursor();
@@ -194,16 +195,16 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
 
     @SuppressLint("NewApi")
     public WritableMap getPathFromUri (final Context context, Uri uri)  {
-        Log.d("RN-Native","getPathFromUri" + uri);
+        Log.d(LOG_TAG,"getPathFromUri" + uri);
         final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
         String selection = null;
         String[] selectionArgs = null;
         // Uri is different in versions after KITKAT (Android 4.4), we need to
         // deal with different Uris.
         String type="audio";
-        Log.d("RN-Native",String.valueOf(isDownloadsDocument(uri)));
-        Log.d("RN-Native - idd",String.valueOf(isDownloadsDocument(uri)));
-        Log.d("RN-Native - dcgd",DocumentsContract.getDocumentId(uri));
+        Log.d(LOG_TAG,String.valueOf(isDownloadsDocument(uri)));
+        Log.d(LOG_TAG,String.valueOf(isDownloadsDocument(uri)));
+        Log.d(LOG_TAG,DocumentsContract.getDocumentId(uri));
         if (needToCheckUri && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
@@ -229,25 +230,7 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
                 selectionArgs = new String[]{ split[1] };
             }
         }
-        //val toast = Toast.makeText(this.reactContext, uri.getScheme());
-       // toast.show();
-/*
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            
-            final String[] projection = { MediaStore.Images.Media.DATA };
-            Cursor cursor = null;
-            try {
-                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
-                final int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                if (cursor.moveToFirst()) {
-                   // return cursor.getString(column_index);
-                }
-            } catch (final Exception e) {
-            }
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
 
-
-            if("audio".equals(type)){*/
                 final String[] projection = {MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM,MediaStore.Audio.Media.ALBUM_ID };
                 Cursor cursor = null;
                 final WritableMap song = Arguments.createMap();
@@ -278,10 +261,7 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
                   }
                  } catch (final Exception e) {
                 }
-           // }
-            
-           // return uri.getPath();
-       // }
+
         return null;
     }
 
@@ -381,6 +361,5 @@ public class RingtonesLibraryModule extends ReactContextBaseJavaModule {
     private boolean isRingtoneType(final int ringtoneType, final int ringtoneTypeToCompare) {
         return ringtoneTypeToCompare == ringtoneType || RingtoneManager.TYPE_ALL == ringtoneType;
     }
-
-
+    
 }
