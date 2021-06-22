@@ -1,63 +1,39 @@
 
 package com.reactlibrary;
 
-import android.Manifest;
-import android.content.ContentResolver;
+import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.pm.PackageManager;
-import android.database.DatabaseUtils;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.provider.MediaStore;
-import android.media.MediaFormat;
-import android.database.Cursor;
-import android.media.MediaExtractor;
-
-import com.facebook.react.ReactActivity;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.Arguments;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import android.annotation.SuppressLint; 
-import android.content.ContentUris; 
-import android.content.Context; 
-import android.database.Cursor; 
-import android.net.Uri; 
-import android.os.Build; 
-import android.os.Environment; 
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.util.Log;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
-
-import java.net.URISyntaxException;
-
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 class RingtoneUtils {
